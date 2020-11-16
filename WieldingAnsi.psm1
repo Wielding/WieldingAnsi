@@ -34,20 +34,17 @@ function Show-AnsiCodes() {
  .DESCRIPTION
     Displays the supported ANSI values
 #>        
-    $esc = $([char]27)
+    Write-Wansi "`n{:UnderlineOn:}Styles{:R:}`n"
+    Write-Wansi "{:BoldOn:}Bold '`$Wansi.BoldOn'{:BoldOff:} : Bold Off '`$Wansi.BoldOff'{:R:}`n"
+    Write-Wansi "{:UnderlineOn:}Underline '`$Wansi.UnderlineOn'{:UnderlineOff:} : Underline Off '`$Wansi.UnderlineOff'{:R:}`n"
+    Write-Wansi "{:InverseOn:}Inverse '`$Wansi.InverseOn'{:InverseOff:} : Inverse Off '`$Wansi.InverseOff'{:R:}`n"    
+    Write-Wansi "{:InverseOn:}{:UnderlineOn:}{:BoldOn:}Everything On {:R:}: Reset `$(`$Wansi.R)`n"
 
-    Write-Host "`n$esc[1;4mStyles$esc[0m"
-    Write-Host "$($Wansi.BoldOn)Bold '`$Wansi.BoldOn'$($Wansi.BoldOff) : Bold Off '`$Wansi.BoldOff'$($Wansi.R)"
-    Write-Host "$($Wansi.UnderlineOn)Underline '`$Wansi.UnderlineOn'$($Wansi.UnderlineOff) : Underline Off '`$Wansi.UnderlineOff'$($Wansi.R)"
-    Write-Host "$($Wansi.InverseOn)Inverse '`$Wansi.InverseOn'$($Wansi.InverseOff) : Inverse Off '`$Wansi.InverseOff'$($Wansi.R)"    
-    Write-Host "$($Wansi.InverseOn)$($Wansi.UnderlineOn)$($Wansi.BoldOn)Everything On $($Wansi.R): Reset `$(`$Wansi.R)"
-
-
-    Write-Host "`n$esc[1;4mForeground(`$Wansi.F`#),  Background(`$Wansi.B`#)$esc[0m"
+    Write-Wansi "`n{:UnderlineOn:}Foreground(`$Wansi.F`#),  Background(`$Wansi.B`#){:R:}`n"
     foreach ($fb in 38, 48) {
         foreach ($color in 0..255) {
             $field = "$(if ($fb -eq 38) {"F"} else {"B"})$color".PadLeft(4)
-            Write-Host -NoNewLine "$esc[$fb;5;${color}m$field $esc[0m"
+            Write-Host -NoNewLine "`e[$fb;5;${color}m$field `e[0m"
             if ( (($color + 1) % 6) -eq 4 ) { Write-Host "`r" }
         }
         Write-Host `n
@@ -72,8 +69,6 @@ function ConvertTo-AnsiString() {
                 $code = $Wansi.PSObject.Properties.Item($property).Value
                 $result = $result.Replace("`{$item`}", $code)
             }
-
-
         }
     }
 
