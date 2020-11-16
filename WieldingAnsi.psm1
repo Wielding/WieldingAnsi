@@ -11,6 +11,13 @@ class AnsiCodes {
 $Wansi = New-Object -TypeName AnsiCodes
 
 function Update-AnsiCodes() {
+<#
+ .SYNOPSIS
+    Builds the color attributes for the AnsiCodes class
+
+ .DESCRIPTION
+    Builds the color attributes for the AnsiCodes class
+#>    
     $esc = $([char]27)
     foreach ($fb in 38, 48) {
         foreach ($color in 0..255) {
@@ -20,14 +27,23 @@ function Update-AnsiCodes() {
 }
 
 function Show-AnsiCodes() {
+<#
+ .SYNOPSIS
+    Displays the supported ANSI values
+
+ .DESCRIPTION
+    Displays the supported ANSI values
+#>        
     $esc = $([char]27)
 
     Write-Host "`n$esc[1;4mStyles$esc[0m"
-    Write-Host "$($Wansi.BoldOn)Bold 'BoldOn'$($Wansi.R)"
-    Write-Host "$($Wansi.UnderlineOn)Underlined 'UnderlineOn'$($Wansi.R)"
-    Write-Host "$($Wansi.InverseOn)Inverse 'InverseOn'$($Wansi.R)"
+    Write-Host "$($Wansi.BoldOn)Bold '`$Wansi.BoldOn'$($Wansi.BoldOff) : Bold Off '`$Wansi.BoldOff'$($Wansi.R)"
+    Write-Host "$($Wansi.UnderlineOn)Underline '`$Wansi.UnderlineOn'$($Wansi.UnderlineOff) : Underline Off '`$Wansi.UnderlineOff'$($Wansi.R)"
+    Write-Host "$($Wansi.InverseOn)Inverse '`$Wansi.InverseOn'$($Wansi.InverseOff) : Inverse Off '`$Wansi.InverseOff'$($Wansi.R)"    
+    Write-Host "$($Wansi.InverseOn)$($Wansi.UnderlineOn)$($Wansi.BoldOn)Everything On $($Wansi.R): Reset `$(`$Wansi.R)"
 
-    Write-Host "`n$esc[1;4mForeground(F),  Background(B)$esc[0m"
+
+    Write-Host "`n$esc[1;4mForeground(`$Wansi.F`#),  Background(`$Wansi.B`#)$esc[0m"
     foreach ($fb in 38, 48) {
         foreach ($color in 0..255) {
             $field = "$(if ($fb -eq 38) {"F"} else {"B"})$color".PadLeft(4)
