@@ -70,9 +70,10 @@ function ConvertTo-AnsiString() {
 
             if ([bool]($Wansi.PSObject.Properties.name -match $property)) {
                 $code = $Wansi.PSObject.Properties.Item($property).Value
+                $result = $result.Replace("`{$item`}", $code)
             }
 
-            $result = $result.Replace("`{$item`}", $code)
+
         }
     }
 
