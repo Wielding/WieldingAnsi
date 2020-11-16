@@ -25,3 +25,17 @@ function prompt {
 Which gives me this
 
 ![output](images/prompt.png)
+
+You can use the modules `Write-Wansi` function to get the same result with this code.
+
+```powershell
+function prompt {
+  $line =  "-".PadRight($host.UI.RawUI.WindowSize.Width - $env:USERDOMAIN.Length - 1, "-")
+  Write-Wansi "{:F226:}$line{:F202:} {:BoldOn:}$env:USERDOMAIN{:R:}"
+  Write-Wansi "{:F15:}[{:F46:}$((Get-Location).Path.Replace($($HOME), '~')){:F15:}]{:R:}"
+  Write-Wansi "{:F2:}`n▶{:R:}"
+ 
+  return " "
+}
+
+```

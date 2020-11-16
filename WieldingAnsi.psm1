@@ -54,9 +54,44 @@ function Show-AnsiCodes() {
     }    
 }
 
+function ConvertTo-AnsiString() {
+    param (
+        [string]$value
+    )
+
+    $result = $value
+    $TextInfo = (Get-Culture).TextInfo
+
+    $candidates = $value -split {$_ -eq "{" -or $_ -eq "}"}
+
+    foreach ($item in $candidates) {
+        if ($item.StartsWith(":") -and $item.EndsWith(":")) {
+            $property = $TextInfo.ToTitleCase($item.Replace(":", ""))
+
+            if ([bool]($Wansi.PSObject.Properties.name -match $property)) {
+                $code = $Wansi.PSObject.Properties.Item($property).Value
+            }
+
+            $result = $result.Replace("`{$item`}", $code)
+        }
+    }
+
+    return $result
+}
+
+function Write-Wansi() {
+    param (
+        [string]$value
+    )
+
+    Write-Host $(ConvertTo-AnsiString $value) -NoNewline
+}
+
 Update-AnsiCodes
 
 Export-ModuleMember -Function Out-Default, 'Show-AnsiCodes'
 Export-ModuleMember -Function Out-Default, 'Update-AnsiCodes'
+Export-ModuleMember -Function Out-Default, 'ConvertTo-AnsiString'
+Export-ModuleMember -Function Out-Default, 'Write-Wansi'
 Export-ModuleMember -Variable 'Wansi'
 
