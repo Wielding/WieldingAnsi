@@ -10,6 +10,7 @@ class AnsiCodes {
 
 class AnsiString {
     [int]$Length
+    [int]$NakedLength
     [string]$Value
 }
 
@@ -90,7 +91,8 @@ function ConvertTo-AnsiString() {
    
     $ansiString = New-Object -TypeName AnsiString
     $ansiString.Value = $result
-    $ansiString.Length = $naked.Length
+    $ansiString.NakedLength = $naked.Length
+    $ansiString.Length = $result.Length
 
     return $ansiString
 }
