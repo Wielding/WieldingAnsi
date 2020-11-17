@@ -1,19 +1,116 @@
-WieldingAnsi
+# WieldingAnsi
+
+
+Table of Contents
+=================
+<!-- toc -->
+- [WieldingAnsi](#wieldingansi)
+- [Table of Contents](#table-of-contents)
+- [Introduction](#introduction)
+  - [Usage](#usage)
+  - [Example](#example)
+  - [Example](#example-1)
+  - [Wansi Tokens](#wansi-tokens)
+  - [Installation](#installation)
+  - [Prompt Example](#prompt-example)
+<!-- tocstop -->
+
+Introduction
 ============
+WieldingAnsi is Powershell module that contains variables and functions to make displaying text with ANSI escape sequences in the console easier.
 
 :warning: This is a work in progress so the master branch could break your Powershell profile until it is deemed stable.:warning: 
 
-For Windows users this module requires a minimum of Windows 10 1903.  When using this module under Windows please use [Windows Terminal](https://github.com/microsoft/terminal).  Any other console may give unpredictable results and might not work at all.
+For Windows users this module requires a minimum of Windows 10 1803.  When using this module under Windows it is recommended to use [Windows Terminal](https://github.com/microsoft/terminal).  Any other console may give unpredictable results and might not work at all.
 
-This module has been tested under WSL and seems to work fine but more testing is required to back up that claim.
+This module has been tested under some WSL distributions and seems to work fine but more testing is required to back up that claim.
 
-This module has been tested under WSL and seems to work fine but more testing is required to back up that claim.
+Usage
+-----
+The `Show-AnsiCodes` function displays a table in the console to assist with identifying the Wansi codes to use.  
 
-WieldingAnsi is Powershell module that contains variables and functions to make using ANSI escape codes easier.
+```powershell
+Show-AnsiCodes <no parameters>
+```
+![output](images/ansi_codes.png)
 
-Documentation is forthcoming.  Until then here is a quick example.
+There are 2 ways to use the codes in your script.  The first way is directly accessing the values with the exported `$Wansi` class.
 
-You can use the `$Wansi` Class in your everyday Powershell life. You now can mix all 256 colors and styles on a single Write-Host line without remembering all of the escape sequences. You can just use `Show-AnsiCodes` to see the available values and plop them in your script. I like a simple prompt with a separator line and domain identification since I log into many machines.  Here is my prompt function.
+The following will display the word 'Test' with a Red `$($Wansi.F3)` foreground and Blue `$($Wansi.B4)` background, then reset `$($Wansi.R)` the console to defaults.
+
+```powershell
+Write-Host "$($Wansi.F3)$($Wansi.B4)Test$($Wansi.R)`n"
+```
+![output](images/wansi-host.png)
+
+The second way is to use Wansi Tokens and call either the `ConvertTo-AnsiString` or `Write-Wansi` exported functions.
+
+The `ConvertTo-AnsiString` function accepts a string containing [Wansi Tokens](#wansi-tokens) that get converted to ANSI escape sequences.  
+
+The command only takes one parameter.
+```powershell
+ ConvertTo-AnsiString [[-Value] <String>]
+ ```
+
+Example
+-------
+```powershell
+PS>$a = ConvertTo-AnsiString "{:F3:}{:B4:}Test{:R:}"
+```
+![output](images/convert-example1.png)
+
+As you can see the `ConvertTo-AnsiString` returns an object with the following properties.
+
+* **Length** - the length of the string including the ANSI escape codes
+* **NakedLength** - the length of the visible text in the string minus the ANSI escape codes
+* **Value** - the string with the ANSI escape codes
+
+
+If you only want to display the string to your host you can Call `Write-Wansi` which will use `Write-Host` to display the string to the console without the need to call `ConvertTo-AnsiString`.
+
+```powershell
+Write-Wansi <-Value [string]>
+```
+
+Example
+-------
+The following will produce the same ANSI encoded string as the previous `ConvertTo-AnsiString` example without bothering with the intermediate object.
+
+NOTE: Write-Wansi does not produce a NewLine character so you must include it in your string as an escape character or use Write-Host afterwards to write one manually.
+```powershell
+Write-Wansi "{:F3:}{:B4:}Test{:R:}`n"
+```
+
+![output](images/write-wansi.png)
+
+Wansi Tokens
+------------
+Wansi tokens have the same names as the `$Wansi` class properties and are delimited with `{:` and `:}`
+
+The supported style tokens are:
+
+  * `"{:UnderlineOn:}"` - start underlining
+  * `"{:UnderlineOff:}"` - stop underlining
+  * `"{:BoldOn:}"` - start bold
+  * `"{:BoldOff:}"` - stop bold
+  * `"{:InverseOn:}"` - start inverse
+  * `"{:InverseOff:}"` - stop inverse
+  * `"{:R:}"` - reset all attributes
+
+Foreground and background colors can be set using "F" and "B" prefixes followed by the number displayed when calling the `Show-AnsiCodes` function.
+
+* `"{:F#}"` 
+* `"{:B#}"` 
+
+Installation
+------------
+```powershell
+Install-Module WieldingAnsi
+```
+Prompt Example
+--------
+
+Here is a prompt function that can be placed in your profile using the exported `$Wansi` class.
 
 ```powershell
 Import-Module WieldingAnsi
@@ -28,7 +125,7 @@ function prompt {
 }
 ```
 
-Which gives me this
+This produces the following prompt in you Powershell console
 
 ![output](images/prompt.png)
 
