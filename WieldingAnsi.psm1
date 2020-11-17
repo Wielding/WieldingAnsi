@@ -49,9 +49,9 @@ function Show-AnsiCodes() {
         Write-Wansi "`n{:UnderlineOn:}Foreground(`$Wansi.F`#),  Background(`$Wansi.B`#){:R:}`n"
 
         foreach ($color in 0..255) {
-            $fg = ConvertTo-AnsiString "{`:F$color`:} F$color"
-            $bg = ConvertTo-AnsiString "{`:B$color`:} B$color"
-            $s = ("{0}{1}{2}" -f $fg.Value.PadRight(14 + ($color.ToString().Length)), "{:F0:}", $bg.Value.PadRight(14 + ($color.ToString().Length)))
+            $fg = ConvertTo-AnsiString " $color"
+            $bg = ConvertTo-AnsiString "{`:B$color`:}   "
+            $s = ("{0, -5}{1}{2}" -f $fg.Value.PadRight(4), "{:F0:}", $bg.Value.PadRight(14 + ($color.ToString().Length)))
             Write-Wansi $s
             if ( (($color + 1) % 6) -eq 4 ) { Write-Host "`r" }
         }
