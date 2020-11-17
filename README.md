@@ -3,6 +3,8 @@ WieldingAnsi
 
 :warning: This is a work in progress so the master branch could break your Powershell profile until it is deemed stable.:warning: 
 
+This module requires a minimum of Windows 10 1903. When using this module under Windows please use [Windows Terminal](https://github.com/microsoft/terminal).  Any other console may give unpredictable results and might not work at all.
+
 WieldingAnsi is Powershell module that contains variables and functions to make using ANSI escape codes easier.
 
 Documentation is forthcoming.  Until then here is a quick example.
