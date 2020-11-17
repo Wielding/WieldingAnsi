@@ -102,7 +102,7 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-         Tags = @("Write-Wansi", "Wansi", "Color", "Style", "ANSI", "Escape Sequence", "Codes")
+         Tags = @("Write-Wansi", "Wansi", "Color", "Style", "ANSI", "Escape", "Codes")
 
         # A URL to the license for this module.
         LicenseUri = 'https://github.com/Wielding/WieldingAnsi/LICENSE'
