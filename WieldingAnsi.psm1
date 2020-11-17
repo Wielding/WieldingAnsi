@@ -32,29 +32,31 @@ function Update-AnsiCodes() {
 }
 
 function Show-AnsiCodes() {
-<#
- .SYNOPSIS
-    Displays the supported ANSI values
+    <#
+     .SYNOPSIS
+        Displays the supported ANSI values
+    
+     .DESCRIPTION
+        Displays the supported ANSI values
+    #>        
+        Write-Wansi "`n{:UnderlineOn:}Styles{:R:}`n"
+        Write-Wansi "{:BoldOn:}Bold '`$Wansi.BoldOn'{:BoldOff:} : Bold Off '`$Wansi.BoldOff'{:R:}`n"
+        Write-Wansi "{:UnderlineOn:}Underline '`$Wansi.UnderlineOn'{:UnderlineOff:} : Underline Off '`$Wansi.UnderlineOff'{:R:}`n"
+        Write-Wansi "{:InverseOn:}Inverse '`$Wansi.InverseOn'{:InverseOff:} : Inverse Off '`$Wansi.InverseOff'{:R:}`n"    
+        Write-Wansi "{:InverseOn:}{:UnderlineOn:}{:BoldOn:}Everything On {:R:}: Reset `$(`$Wansi.R)`n"
+    
+        Write-Wansi "`n{:UnderlineOn:}Foreground(`$Wansi.F`#),  Background(`$Wansi.B`#){:R:}`n"
 
- .DESCRIPTION
-    Displays the supported ANSI values
-#>        
-    Write-Wansi "`n{:UnderlineOn:}Styles{:R:}`n"
-    Write-Wansi "{:BoldOn:}Bold '`$Wansi.BoldOn'{:BoldOff:} : Bold Off '`$Wansi.BoldOff'{:R:}`n"
-    Write-Wansi "{:UnderlineOn:}Underline '`$Wansi.UnderlineOn'{:UnderlineOff:} : Underline Off '`$Wansi.UnderlineOff'{:R:}`n"
-    Write-Wansi "{:InverseOn:}Inverse '`$Wansi.InverseOn'{:InverseOff:} : Inverse Off '`$Wansi.InverseOff'{:R:}`n"    
-    Write-Wansi "{:InverseOn:}{:UnderlineOn:}{:BoldOn:}Everything On {:R:}: Reset `$(`$Wansi.R)`n"
-
-    Write-Wansi "`n{:UnderlineOn:}Foreground(`$Wansi.F`#),  Background(`$Wansi.B`#){:R:}`n"
-    foreach ($fb in 38, 48) {
         foreach ($color in 0..255) {
-            $field = "$(if ($fb -eq 38) {"F"} else {"B"})$color".PadLeft(4)
-            Write-Host -NoNewLine "`e[$fb;5;${color}m$field `e[0m"
+            $fg = ConvertTo-AnsiString "{`:F$color`:}F$color"
+            $bg = ConvertTo-AnsiString "{`:B$color`:}B$color"
+            $s = ("{0}{1}{2}" -f $fg.Value.PadRight(14 + ($color.ToString().Length)), "{:F0:}", $bg.Value.PadRight(14 + ($color.ToString().Length)))
+            Write-Wansi $s
             if ( (($color + 1) % 6) -eq 4 ) { Write-Host "`r" }
         }
         Write-Host `n
-    }    
-}
+
+    }
 
 function ConvertTo-AnsiString() {
     <#
