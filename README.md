@@ -13,6 +13,8 @@ Table of Contents
   - [Wansi Tokens](#wansi-tokens)
   - [Installation](#installation)
   - [Prompt Example](#prompt-example)
+- [Considerations](#considerations)
+- [Future](#future)
 <!-- tocstop -->
 
 Introduction
@@ -43,7 +45,7 @@ Write-Host "$($Wansi.F3)$($Wansi.B4)Test$($Wansi.R)`n"
 ```
 ![output](images/wansi-host.png)
 
-The second way is to use Wansi Tokens and call either the `ConvertTo-AnsiString` or `Write-Wansi` exported functions.
+The second way is to use [Wansi Tokens](#wansi-tokens) and call either the `ConvertTo-AnsiString` or `Write-Wansi` exported functions.
 
 The `ConvertTo-AnsiString` function accepts a string containing [Wansi Tokens](#wansi-tokens) that get converted to ANSI escape sequences.  
 
@@ -142,3 +144,35 @@ function prompt {
 }
 
 ```
+
+Considerations
+==============
+It gets difficult to handle formatting text containing ANSI escape code due to the fact that strings with ANSI escape sequences are longer than they look. The escape sequences are invisible but still count towards a strings length.  That is the reason `ConvertTo-AnsiString` returns and object with the `NakedLength` property.  The `NakedLength` property contains the length of the input string minus the length of the ANSI sequences.
+
+You can use the `NakedLength` property to do any calculations you might need to create formatted output.  
+
+The `ConvertTo-AnsiString` function is a simple tokenizer that checks tokens against the properties in the `$Wansi` class.  That means that you can add your own tokens by simply adding them to `$Wansi`.
+
+For example if you type the following in the console
+
+```powershell
+Write-Wansi "{:X:}Test{:R:}"
+```
+it would return `"{:X:}Test"` since it does not know of any token named 'X'.
+
+If you were to enter the following in your console
+```powershell
+Add-Member -InputObject $Wansi -MemberType NoteProperty -Name "X" -Value "This is a "
+Write-Wansi "{:X:}Test{:R:}"
+```
+
+The result would be `"This is a Test"` since the $Wansi class now contains a property named 'X'.
+
+Just be warned that the if you use `ConvertTo-AnsiString` with a visible custom token like above the `NakedLength` property will not include the custom token length. It does not expect any of the tokens to produce any visible output. 
+
+However, you can create custom tokens that contain any complex or new ANSI escape sequences on your own (e.g. cursor movement) and `NakedLength` should be correct.  Depending on the console you are using you can try adding some of the codes listed at https://en.wikipedia.org/wiki/ANSI_escape_code
+
+
+Future
+======
+I do plan on enhancing and maintaining this code.  My [WieldingLs](https://github.com/Wielding/WieldingLs) project depends on this which I use across several platforms so I need to keep it working.
