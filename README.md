@@ -15,6 +15,7 @@ Table of Contents
   - [Prompt Example](#prompt-example)
 - [Considerations](#considerations)
 - [Future](#future)
+  - [Have fun making your Powershell console scripts look a little better with ease!](#have-fun-making-your-powershell-console-scripts-look-a-little-better-with-ease)
 <!-- tocstop -->
 
 Introduction
@@ -147,7 +148,7 @@ function prompt {
 
 Considerations
 ==============
-It gets difficult to handle formatting text containing ANSI escape code due to the fact that strings with ANSI escape sequences are longer than they look. The escape sequences are invisible but still count towards a strings length.  That is the reason `ConvertTo-AnsiString` returns and object with the `NakedLength` property.  The `NakedLength` property contains the length of the input string minus the length of the ANSI sequences.
+It gets difficult to handle formatting text containing ANSI escape code due to the fact that strings with ANSI escape sequences are longer than they look. The escape sequences are invisible but still count towards a strings length.  That is the reason `ConvertTo-AnsiString` returns an object with the `NakedLength` property.  The `NakedLength` property contains the length of the input string minus the length of the ANSI sequences.
 
 You can use the `NakedLength` property to do any calculations you might need to create formatted output.  
 
@@ -176,3 +177,5 @@ However, you can create custom tokens that contain any complex or new ANSI escap
 Future
 ======
 I do plan on enhancing and maintaining this code.  My [WieldingLs](https://github.com/Wielding/WieldingLs) project depends on this which I use across several platforms so I need to keep it working.
+
+## Have fun making your Powershell console scripts look a little better with ease! ##
