@@ -8,6 +8,11 @@ class AnsiCodes {
     [string]$R = "`e[0m"
 }
 
+class AnsiString {
+    [int]$Length
+    [string]$Value
+}
+
 $Wansi = New-Object -TypeName AnsiCodes
 
 function Update-AnsiCodes() {
@@ -52,35 +57,55 @@ function Show-AnsiCodes() {
 }
 
 function ConvertTo-AnsiString() {
+    <#
+ .SYNOPSIS
+    Converts input string with Wansi tokens
+
+ .DESCRIPTION
+    Converts input string with Wansi tokens to a string with embedded ANSI escape codes.
+#>            
     param (
         [string]$value
     )
 
-    $result = $value
     $TextInfo = (Get-Culture).TextInfo
+    $result = $value
+    $naked = $value
+    $captures = [regex]::Matches($value,"\{:(\w+):\}").Groups.captures
 
-    $candidates = $value -split {$_ -eq "{" -or $_ -eq "}"}
-
-    foreach ($item in $candidates) {
-        if ($item.StartsWith(":") -and $item.EndsWith(":")) {
-            $property = $TextInfo.ToTitleCase($item.Replace(":", ""))
+    foreach($capture in $captures) {
+        if ($null -ne $capture.Groups) {
+            $token = $capture.Groups[0].Value
+            $property = $TextInfo.ToTitleCase($capture.Groups[1].Value)
+            $naked = $naked.Replace($capture.Groups[0].Value, "")
 
             if ([bool]($Wansi.PSObject.Properties.name -match $property)) {
                 $code = $Wansi.PSObject.Properties.Item($property).Value
-                $result = $result.Replace("`{$item`}", $code)
-            }
+                $result = $result.Replace($token, $code)
+            }            
         }
     }
+   
+    $ansiString = New-Object -TypeName AnsiString
+    $ansiString.Value = $result
+    $ansiString.Length = $naked.Length
 
-    return $result
+    return $ansiString
 }
 
 function Write-Wansi() {
+<#
+ .SYNOPSIS
+    Displays a string with Wansi tokens
+
+ .DESCRIPTION
+    Displays a string with Wansi tokens
+#>            
     param (
         [string]$value
     )
 
-    Write-Host $(ConvertTo-AnsiString $value) -NoNewline
+    Write-Host $(ConvertTo-AnsiString $value).Value -NoNewline
 }
 
 Update-AnsiCodes
@@ -90,4 +115,5 @@ Export-ModuleMember -Function Out-Default, 'Update-AnsiCodes'
 Export-ModuleMember -Function Out-Default, 'ConvertTo-AnsiString'
 Export-ModuleMember -Function Out-Default, 'Write-Wansi'
 Export-ModuleMember -Variable 'Wansi'
+
 
