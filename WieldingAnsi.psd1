@@ -12,7 +12,7 @@
 RootModule = 'WieldingAnsi.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.0.6'
+ModuleVersion = '0.0.7'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -99,7 +99,7 @@ PrivateData = @{
         Tags = 'Write-Wansi','Wansi','Color','Style','ANSI','Escape','Codes','Linux','Console'
 
         # A URL to the license for this module.
-        LicenseUri = 'https://github.com/Wielding/WieldingAnsi/blob/master/LICENSE'
+        LicenseUri = 'https://raw.githubusercontent.com/Wielding/WieldingAnsi/master/LICENSE'
 
         # A URL to the main website for this project.
         ProjectUri = 'https://github.com/Wielding/WieldingAnsi'
@@ -111,7 +111,7 @@ PrivateData = @{
         ReleaseNotes = 'fixed Get-WieldingAnsiInfo for gallery installs'
 
         # Prerelease string of this module
-        # Prerelease = ''
+        Prerelease = 'Alpha'
 
         # Flag to indicate whether the module requires explicit user acceptance for install/update/save
         # RequireLicenseAcceptance = $false
