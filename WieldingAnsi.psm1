@@ -16,6 +16,12 @@ class AnsiString {
 
 $Wansi = New-Object -TypeName AnsiCodes
 
+function Get-WieldingAnsiInfo {
+    $moduleName = (Get-ChildItem "$PSScriptRoot/*.psd1").Name
+
+    Import-PowerShellDataFile -Path "$PSScriptRoot/$moduleName"
+}
+
 function Update-AnsiCodes() {
     <#
  .SYNOPSIS
@@ -140,6 +146,7 @@ function Write-Wansi() {
 
 Update-AnsiCodes
 
+Export-ModuleMember -Function Out-Default, 'Get-WieldingAnsiInfo'
 Export-ModuleMember -Function Out-Default, 'Show-AnsiCodes'
 Export-ModuleMember -Function Out-Default, 'Update-AnsiCodes'
 Export-ModuleMember -Function Out-Default, 'ConvertTo-AnsiString'

@@ -12,7 +12,7 @@
 RootModule = 'WieldingAnsi.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.0.3'
+ModuleVersion = '0.0.6'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -69,8 +69,8 @@ PowerShellVersion = '5.0'
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'Show-AnsiCodes', 'Update-AnsiCodes', 'ConvertTo-AnsiString', 
-               'Write-Wansi'
+FunctionsToExport = 'Get-WieldingAnsiInfo', 'Show-AnsiCodes', 'Update-AnsiCodes', 
+               'ConvertTo-AnsiString', 'Write-Wansi'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
@@ -108,7 +108,7 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = 'updated manifest'
+        ReleaseNotes = 'fixed Get-WieldingAnsiInfo for gallery installs'
 
         # Prerelease string of this module
         # Prerelease = ''
