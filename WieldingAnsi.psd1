@@ -12,7 +12,7 @@
 RootModule = 'WieldingAnsi.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.0.1'
+ModuleVersion = '0.0.2'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -102,10 +102,10 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-         Tags = @("Write-Wansi", "Wansi", "Color", "Style", "ANSI", "Escape", "Codes")
+         Tags = @("Write-Wansi", "Wansi", "Color", "Style", "ANSI", "Escape", "Codes", "Linux", "Console")
 
         # A URL to the license for this module.
-        LicenseUri = 'https://github.com/Wielding/WieldingAnsi/LICENSE'
+        LicenseUri = 'https://github.com/Wielding/WieldingAnsi/blob/master/LICENSE'
 
         # A URL to the main website for this project.
         ProjectUri = 'https://github.com/Wielding/WieldingAnsi'
@@ -114,7 +114,7 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = '0.0.1 - Initial version'
+        ReleaseNotes = 'https://github.com/Wielding/WieldingAnsi/blob/master/CHANGELOG.md'
 
         # Prerelease string of this module
         # Prerelease = ''
