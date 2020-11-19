@@ -173,6 +173,14 @@ Just be warned that the if you use `ConvertTo-AnsiString` with a visible custom 
 
 However, you can create custom tokens that contain any complex or new ANSI escape sequences on your own (e.g. cursor movement) and `NakedLength` should be correct.  Depending on the console you are using you can try adding some of the codes listed at https://en.wikipedia.org/wiki/ANSI_escape_code
 
+For example:
+
+```powershell
+Add-Member -InputObject $Wansi -MemberType NoteProperty -Name "DoubleUnderlineOn" -Value "`e[21m"
+$GdcTheme.FileAttributesColors["Directory"] = "{:F3:}{:DoubleUnderlineOn:}"
+```
+
+This first line will add a property to the `$Wansi` object so that you can use the Wansi Token  `{:DoubleUnderlineOn:}`.  The second line will set the File Attribute "Directory" to have a Yellow foreground with a double underline style.  Once again, remember that not all ANSI escape sequences are supported on all Powershell console hosts.  This particular code woks fine using [Windows Terminal](https://github.com/microsoft/terminal) but failed to work on the default Windows Powershell console.
 
 Future
 ======
