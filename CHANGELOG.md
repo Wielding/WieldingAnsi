@@ -3,6 +3,10 @@ Change Log
 
 ## **Latest**
 
+### 0.0.8 - 2020-11-18
+#### Changes
+- removed from Alpha
+
 ## 0.0.7 - 2020-11-18
 ### Changes
 - Tagged as Alpha
