@@ -3,6 +3,10 @@ Change Log
 
 ## **Latest**
 
+### 0.0.11 - 2020-11-21
+#### Changes
+- Made Wansi Tokens case sensitive
+
 ### 0.0.10-Alpha - 2020-11-21
 #### Changes
 - Added tests

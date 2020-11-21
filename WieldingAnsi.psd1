@@ -12,7 +12,7 @@
 RootModule = 'WieldingAnsi.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.0.10'
+ModuleVersion = '0.0.11'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -108,10 +108,10 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = 'Added tests'
+        ReleaseNotes = 'Made Wansi Tokens case sensitive'
 
         # Prerelease string of this module
-        Prerelease = 'Alpha'
+        # Prerelease = ''
 
         # Flag to indicate whether the module requires explicit user acceptance for install/update/save
         # RequireLicenseAcceptance = $false

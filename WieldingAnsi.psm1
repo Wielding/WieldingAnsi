@@ -42,7 +42,6 @@ function Update-AnsiCodes() {
         }
     }    
 }
-
 function Show-AnsiCodes() {
     <#
      .SYNOPSIS
@@ -74,7 +73,7 @@ function Show-AnsiCodes() {
 
 }
 
-function ConvertTo-AnsiString() {
+function ConvertTo-AnsiString {
     <#
  .SYNOPSIS
     Converts input string with Wansi tokens
@@ -98,7 +97,6 @@ function ConvertTo-AnsiString() {
         [int]$PadLeft
     )
 
-    $TextInfo = (Get-Culture).TextInfo
     $result = $Value
     $naked = $Value
     $captures = [regex]::Matches($Value, "\{:(\w+):\}").Groups.captures
@@ -107,10 +105,10 @@ function ConvertTo-AnsiString() {
     foreach ($capture in $captures) {
         if ($null -ne $capture.Groups) {
             $token = $capture.Groups[0].Value
-            $property = $TextInfo.ToTitleCase($capture.Groups[1].Value)
+            $property =$capture.Groups[1].Value
             $naked = $naked.Replace($capture.Groups[0].Value, "")
 
-            if ([bool]($Wansi.PSObject.Properties.name -match $property)) {
+            if ([bool]($Wansi.PSObject.Properties.name.Contains($property))) {
                 $code = $Wansi.PSObject.Properties.Item($property).Value
                 $tokensLength += $code.Length
                 $result = $result.Replace($token, $code)

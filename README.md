@@ -90,6 +90,8 @@ Wansi Tokens
 ------------
 Wansi tokens have the same names as the `$Wansi` class properties and are delimited with `{:` and `:}`
 
+All Wansi tokens are case sensitive.  If you don't use proper case the token will not be recognized and will be seen in your result instead of converted to an ANSI sequence.  
+
 The supported style tokens are:
 
   * `"{:UnderlineOn:}"` - start underlining
