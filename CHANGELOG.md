@@ -3,6 +3,10 @@ Change Log
 
 ## **Latest**
 
+### 0.0.9 - 2020-11-21
+#### Changes
+- added padding and invisibleLength
+
 ### 0.0.8 - 2020-11-18
 #### Changes
 - removed from Alpha

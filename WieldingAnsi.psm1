@@ -11,6 +11,7 @@ class AnsiCodes {
 class AnsiString {
     [int]$Length
     [int]$NakedLength
+    [int]$InvisibleLength
     [string]$Value
 }
 
@@ -92,13 +93,16 @@ function ConvertTo-AnsiString() {
     an AnsiString object with Length, NakedLength and Value properties.
 #>            
     param (
-        [string]$Value
+        [string]$Value,
+        [int]$PadRight,
+        [int]$PadLeft
     )
 
     $TextInfo = (Get-Culture).TextInfo
     $result = $Value
     $naked = $Value
     $captures = [regex]::Matches($Value, "\{:(\w+):\}").Groups.captures
+    $tokensLength = 0
 
     foreach ($capture in $captures) {
         if ($null -ne $capture.Groups) {
@@ -108,15 +112,31 @@ function ConvertTo-AnsiString() {
 
             if ([bool]($Wansi.PSObject.Properties.name -match $property)) {
                 $code = $Wansi.PSObject.Properties.Item($property).Value
+                $tokensLength += $code.Length
                 $result = $result.Replace($token, $code)
             }            
         }
     }
+
+    $padLength = 0
+
+    if ($PadLeft -ne 0) {        
+        $originalLength = $result.Length
+        $result = $result.PadLeft($PadLeft + $tokensLength, " ")
+        $padLength += ($result.Length - $originalLength)
+    }
+
+    if ($PadRight -ne 0) {
+        $originalLength = $result.Length
+        $result = $result.PadRight($PadRight + $tokensLength, " ")
+        $padLength += ($result.Length - $originalLength)
+    }
    
     $ansiString = New-Object -TypeName AnsiString
     $ansiString.Value = $result
-    $ansiString.NakedLength = $naked.Length
+    $ansiString.NakedLength = $naked.Length + $padLength
     $ansiString.Length = $result.Length
+    $ansiString.InvisibleLength = $tokensLength
 
     return $ansiString
 }
