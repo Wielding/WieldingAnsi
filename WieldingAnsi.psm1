@@ -1,4 +1,4 @@
-class AnsiCodes {
+class WansiConfig {
     [string]$UnderlineOn = "`e[4m"
     [string]$UnderlineOff = "`e[24m"
     [string]$BoldOn = "`e[1m"
@@ -6,6 +6,7 @@ class AnsiCodes {
     [string]$InverseOn = "`e[7m"
     [string]$InverseOff = "`e[27m"        
     [string]$R = "`e[0m"
+    [bool]$Enabled = $true
 }
 
 class AnsiString {
@@ -15,7 +16,7 @@ class AnsiString {
     [string]$Value
 }
 
-$Wansi = New-Object -TypeName AnsiCodes
+$Wansi = New-Object -TypeName WansiConfig
 
 function Get-WieldingAnsiInfo {
     $moduleName = (Get-ChildItem "$PSScriptRoot/*.psd1").Name
@@ -58,19 +59,17 @@ function Show-AnsiCodes() {
     Write-Wansi "{:BoldOn:}Bold '`$Wansi.BoldOn'{:BoldOff:} : Bold Off '`$Wansi.BoldOff'{:R:}`n"
     Write-Wansi "{:UnderlineOn:}Underline '`$Wansi.UnderlineOn'{:UnderlineOff:} : Underline Off '`$Wansi.UnderlineOff'{:R:}`n"
     Write-Wansi "{:InverseOn:}Inverse '`$Wansi.InverseOn'{:InverseOff:} : Inverse Off '`$Wansi.InverseOff'{:R:}`n"    
-    Write-Wansi "{:InverseOn:}{:UnderlineOn:}{:BoldOn:}Everything On {:R:}: Reset `$(`$Wansi.R)`n"
+    Write-Wansi "{:InverseOn:}{:UnderlineOn:}{:BoldOn:}Everything On {:R:}: Reset `$(`$Wansi.R)`n"   
     
     Write-Wansi "`n{:UnderlineOn:}Foreground(`$Wansi.F`#),  Background(`$Wansi.B`#){:R:}`n"
 
     foreach ($color in 0..255) {
-        $fg = ConvertTo-AnsiString " $color"
-        $bg = ConvertTo-AnsiString "{`:B$color`:}   "
-        $s = ("{0, -5}{1}{2}" -f $fg.Value.PadRight(4), "{:F0:}", $bg.Value.PadRight(14 + ($color.ToString().Length)))
-        Write-Wansi $s
+        $fg = ConvertTo-AnsiString " $color" -PadRight 5
+        $bg = ConvertTo-AnsiString "{`:B$color`:}" -PadRight 5
+        Write-Wansi ("{0, -5}{1}{2}" -f $fg.Value, "{:F0:}", $bg.Value)
         if ( (($color + 1) % 6) -eq 4 ) { Write-Host "`r" }
     }
     Write-Host `n
-
 }
 
 function ConvertTo-AnsiString {
@@ -108,15 +107,24 @@ function ConvertTo-AnsiString {
             $property =$capture.Groups[1].Value
             $naked = $naked.Replace($capture.Groups[0].Value, "")
 
+
             if ([bool]($Wansi.PSObject.Properties.name.Contains($property))) {
                 $code = $Wansi.PSObject.Properties.Item($property).Value
                 $tokensLength += $code.Length
-                $result = $result.Replace($token, $code)
+                if ($Wansi.Enabled) {
+                    $result = $result.Replace($token, $code)
+                }  else {
+                    $result = $result.Replace($token, "")
+                }
             }            
         }
     }
 
     $padLength = 0
+
+    if (-not $Wansi.Enabled) {
+        $tokensLength = 0;
+    }
 
     if ($PadLeft -ne 0) {        
         $originalLength = $result.Length
@@ -134,7 +142,12 @@ function ConvertTo-AnsiString {
     $ansiString.Value = $result
     $ansiString.NakedLength = $naked.Length + $padLength
     $ansiString.Length = $result.Length
-    $ansiString.InvisibleLength = $tokensLength
+    if ($Wansi.Enabled) {
+        $ansiString.InvisibleLength = $tokensLength
+    } else {
+        $ansiString.InvisibleLength = 0
+        $ansiString.NakedLength = $result.Length
+    }
 
     return $ansiString
 }

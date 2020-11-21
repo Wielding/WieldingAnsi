@@ -8,7 +8,9 @@ Table of Contents
 - [Table of Contents](#table-of-contents)
 - [Introduction](#introduction)
   - [Usage](#usage)
+  - [ConvertTo-AnsiString](#convertto-ansistring)
   - [Example](#example)
+  - [Write-Wansi](#write-wansi)
   - [Example](#example-1)
   - [Wansi Tokens](#wansi-tokens)
   - [Installation](#installation)
@@ -20,7 +22,7 @@ Table of Contents
 
 Introduction
 ============
-WieldingAnsi is Powershell module that contains variables and functions to make displaying text with ANSI escape sequences in the console easier.
+WieldingAnsi is Powershell module that contains variables and functions to make displaying text with ANSI escape sequences in the console easier.  It also has a configuration value that will enable scripts to completely disable the ANSI escape sequences when using [Wansi Tokens](#wansi-tokens) if desired without having to change your code.
 
 :warning: This is a work in progress so the master branch could break your Powershell profile until it is deemed stable.:warning: 
 
@@ -48,6 +50,9 @@ Write-Host "$($Wansi.F3)$($Wansi.B4)Test$($Wansi.R)`n"
 
 The second way is to use [Wansi Tokens](#wansi-tokens) and call either the `ConvertTo-AnsiString` or `Write-Wansi` exported functions.
 
+ConvertTo-AnsiString
+--------------------
+
 The `ConvertTo-AnsiString` function accepts a string containing [Wansi Tokens](#wansi-tokens) that get converted to ANSI escape sequences.  
 
 The command only takes one parameter.
@@ -68,7 +73,8 @@ As you can see the `ConvertTo-AnsiString` returns an object with the following p
 * **NakedLength** - the length of the visible text in the string minus the ANSI escape codes
 * **Value** - the string with the ANSI escape codes
 
-
+Write-Wansi
+-----------
 If you only want to display the string to your host you can Call `Write-Wansi` which will use `Write-Host` to display the string to the console without the need to call `ConvertTo-AnsiString`.
 
 ```powershell
@@ -85,6 +91,8 @@ Write-Wansi "{:F3:}{:B4:}Test{:R:}`n"
 ```
 
 ![output](images/write-wansi.png)
+
+You can completely disable the Wansi colors and styles by setting `$Wansi.Enabled` to `$false`.  This will keep all padding the same and adjust the return values from `ConvertTo-AnsiString` to reflect the lack of ANSI codes in the returned `Value`.
 
 Wansi Tokens
 ------------

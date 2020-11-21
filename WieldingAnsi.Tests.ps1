@@ -29,6 +29,7 @@ Describe 'ConvertTo-AnsiString no Wansi' {
 Describe 'ConvertTo-AnsiString with Wansi' {
     
     It 'Should return Length = 12' {
+        $Wansi.Enabled = $true
         (ConvertTo-AnsiString $wansiValue).Length | Should -Be 12
     }
 
@@ -45,10 +46,31 @@ Describe 'ConvertTo-AnsiString with Wansi' {
     }        
 }
 
+Describe 'ConvertTo-AnsiString with Wansi Disabled' {
+    
+    It 'Should return Length = 12' {
+        $Wansi.Enabled = $false
+        (ConvertTo-AnsiString $wansiValue).Length | Should -Be 4
+    }
+
+    It 'Should return NakedLength = 4' {
+        (ConvertTo-AnsiString $wansiValue).NakedLength | Should -Be 4
+    }    
+
+    It 'Should return InvisibleLength = 8' {
+        (ConvertTo-AnsiString $wansiValue).InvisibleLength | Should -Be 0
+    }        
+
+    It 'Should return Value = "`test"' {
+        (ConvertTo-AnsiString $wansiValue).Value | Should -Be "test"
+    }        
+}
+
 
 Describe 'ConvertTo-AnsiString with Wansi PadLeft' {
     
     It 'Should return Length = 28' {
+        $Wansi.Enabled = $true
         (ConvertTo-AnsiString $wansiValue -PadLeft 20).Length | Should -Be 28
     }
 
@@ -70,6 +92,7 @@ Describe 'ConvertTo-AnsiString with Wansi PadLeft' {
 Describe 'ConvertTo-AnsiString with Wansi PadRight' {
     
     It 'Should return Length = 28' {
+        $Wansi.Enabled = $true
         (ConvertTo-AnsiString $wansiValue -PadRight 20).Length | Should -Be 28
     }
 
@@ -90,6 +113,7 @@ Describe 'ConvertTo-AnsiString with Wansi PadRight' {
 Describe 'ConvertTo-AnsiString with Wansi PadLeft Short' {
         
     It 'Should return Length = 12' {
+        $Wansi.Enabled = $true
         (ConvertTo-AnsiString $wansiValue -PadLeft 3).Length | Should -Be 12
     }
 
@@ -109,6 +133,7 @@ Describe 'ConvertTo-AnsiString with Wansi PadLeft Short' {
 Describe 'ConvertTo-AnsiString with Wansi PadLeft Exact' {
         
     It 'Should return Length = 12' {
+        $Wansi.Enabled = $true
         (ConvertTo-AnsiString $wansiValue -PadLeft 4).Length | Should -Be 12
     }
 

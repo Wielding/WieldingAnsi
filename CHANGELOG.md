@@ -3,6 +3,10 @@ Change Log
 
 ## **Latest**
 
+### 0.0.12 - 2020-11-21
+#### Changes
+- Added ability to disable Wansi Tokens
+
 ### 0.0.11 - 2020-11-21
 #### Changes
 - Made Wansi Tokens case sensitive
