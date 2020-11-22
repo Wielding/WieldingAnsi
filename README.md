@@ -22,9 +22,13 @@ Table of Contents
 
 Introduction
 ============
+:warning: This is a work in progress so the master branch could break your Powershell profile or scripts until it is deemed stable.:warning: 
+
+Please be patient with the documentation.  It is a bit fragmented since my current focus is on the code and I am throwing things in here as I implement and change them.  That will be addressed when a stable version is reached.
+
 WieldingAnsi is Powershell module that contains variables and functions to make displaying text with ANSI escape sequences in the console easier.  It also has a configuration value that will enable scripts to completely disable the ANSI escape sequences when using [Wansi Tokens](#wansi-tokens) if desired without having to change your code.
 
-:warning: This is a work in progress so the master branch could break your Powershell profile until it is deemed stable.:warning: 
+WieldingAnsi is written to be a global theming engine.  The `$Wansi` class is used across all scripts that call the [Write-Wansi](#write-wansi) or [ConvertTo-AnsiString](#convertto-ansistring) functions within the same Powershell console session. 
 
 For Windows users this module requires a minimum of Windows 10 1803.  When using this module under Windows it is recommended to use [Windows Terminal](https://github.com/microsoft/terminal).  Any other console may give unpredictable results and might not work at all.
 
@@ -32,7 +36,7 @@ This module has been tested under some WSL distributions and seems to work fine 
 
 Usage
 -----
-The `Show-AnsiCodes` function displays a table in the console to assist with identifying the Wansi codes to use.  
+The `Show-AnsiCodes` function displays all of the codes supported in the console to assist with identifying the Wansi codes to use.  
 
 ```powershell
 Show-AnsiCodes <no parameters>
@@ -62,24 +66,37 @@ The command only takes one parameter.
 
 Example
 -------
+If you enter the following on the Powershell command line
+
 ```powershell
-PS>$a = ConvertTo-AnsiString "{:F3:}{:B4:}Test{:R:}"
+ConvertTo-AnsiString "{:F3:}{:B4:}Test{:R:}"
 ```
-![output](images/convert-example1.png)
+
+It will display
+
+```powershell
+Length NakedLength InvisibleLength Value
+------ ----------- --------------- -----
+    26           4              22 Test
+```    
+
 
 As you can see the `ConvertTo-AnsiString` returns an object with the following properties.
 
 * **Length** - the length of the string including the ANSI escape codes
 * **NakedLength** - the length of the visible text in the string minus the ANSI escape codes
+*  **InvisibleLength** - the total length of all of the non printing ANSI escape sequences in the returned `Value`
 * **Value** - the string with the ANSI escape codes
 
 Write-Wansi
 -----------
-If you only want to display the string to your host you can Call `Write-Wansi` which will use `Write-Host` to display the string to the console without the need to call `ConvertTo-AnsiString`.
+If you only want to display the string with the Wansi tokens interpreted to your host you can Call `Write-Wansi` which will use `Write-Host` to display the string to the console without the need to call `ConvertTo-AnsiString`. 
 
 ```powershell
 Write-Wansi <-Value [string]>
 ```
+
+ You don't have access to the properties of the ANSI string when using `Write-Host` since it is just a shortcut to writing to the console.  For that use [ConvertTo-AnsiString](#convertto-ansistring).
 
 Example
 -------
@@ -92,11 +109,10 @@ Write-Wansi "{:F3:}{:B4:}Test{:R:}`n"
 
 ![output](images/write-wansi.png)
 
-You can completely disable the Wansi colors and styles by setting `$Wansi.Enabled` to `$false`.  This will keep all padding the same and adjust the return values from `ConvertTo-AnsiString` to reflect the lack of ANSI codes in the returned `Value`.
 
 Wansi Tokens
 ------------
-Wansi tokens have the same names as the `$Wansi` class properties and are delimited with `{:` and `:}`
+Wansi tokens have the same names as the `$Wansi` class properties and are delimited with `{:` and `:}`.  These tokens can be embedded in strings passed to `Write-Wansi` and `ConvertTo-AnsiString` which will convert them to the associated `$Wansi` class property.  You can see this in action by checking out my Powershell `ls` replacement project at https://github.com/Wielding/WieldingLs.  It uses Wansi tokens to apply styles to directory listings while mimicking the **nix* `ls` command.
 
 All Wansi tokens are case sensitive.  If you don't use proper case the token will not be recognized and will be seen in your result instead of converted to an ANSI sequence.  
 
@@ -114,6 +130,11 @@ Foreground and background colors can be set using "F" and "B" prefixes followed 
 
 * `"{:F#}"` 
 * `"{:B#}"` 
+
+You can completely disable the Wansi Token colors and styles by setting the global class property `$Wansi.Enabled` to `$false`. This will only change functionality that uses Wansi Tokens and will not change any behavior if you are accessing the ANSI codes directly using the `$Wansi` class.  This will keep all padding the same and adjust the return values from `ConvertTo-AnsiString` to reflect the lack of ANSI codes in the returned `Value`.  
+
+Beware that since `$Wansi.Enabled` is global it will disable all Wansi Token handling in the current Powershell session until it is set back to `$true`.  That means if you are using it in a script and other scripts may be using WieldingAnsi in the same session you should save the initial value and set it back before exiting as to not change the behavior of other scripts.
+
 
 Installation
 ------------
