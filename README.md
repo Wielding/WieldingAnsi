@@ -34,6 +34,10 @@ For Windows users this module requires a minimum of Windows 10 1803.  When using
 
 This module has been tested under some WSL distributions and seems to work fine but more testing is required to back up that claim.
 
+For an example of what is possible with ANSI escape codes check out my example project at https://github.com/Wielding/WieldingProcess. (Windows Only)
+
+This project uses ansi escape codes for moving the cursor, clearning the screen and switching to alternate screen buffers by implementing custom [Wansi Tokens](#wansi-tokens).  
+
 Usage
 -----
 The `Show-AnsiCodes` function displays all of the codes supported in the console to assist with identifying the Wansi codes to use.  
