@@ -2,6 +2,8 @@ Import-Module Pester
 Remove-Module WieldingAnsi -ErrorAction SilentlyContinue
 Import-Module ./WieldingAnsi.psm1
 
+
+
 BeforeAll {
     $nakedValue = "test"
     $wansiValue =  "{:BoldOn:}test{:R:}"

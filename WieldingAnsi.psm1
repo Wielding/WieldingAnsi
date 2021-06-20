@@ -1,3 +1,7 @@
+
+#  \033[38;2;<r>;<g>;<b>m     #Select RGB foreground color
+#  \033[48;2;<r>;<g>;<b>m     #Select RGB background color
+
 class WansiConfig {
     [string]$UnderlineOn = "`e[4m"
     [string]$UnderlineOff = "`e[24m"
@@ -55,21 +59,25 @@ function Show-AnsiCodes() {
         Show-AnsiCodes
         Displays the ANSI code table
     #>        
-    Write-Wansi "`n{:UnderlineOn:}Styles{:R:}`n"
-    Write-Wansi "{:BoldOn:}Bold '`$Wansi.BoldOn'{:BoldOff:} : Bold Off '`$Wansi.BoldOff'{:R:}`n"
-    Write-Wansi "{:UnderlineOn:}Underline '`$Wansi.UnderlineOn'{:UnderlineOff:} : Underline Off '`$Wansi.UnderlineOff'{:R:}`n"
-    Write-Wansi "{:InverseOn:}Inverse '`$Wansi.InverseOn'{:InverseOff:} : Inverse Off '`$Wansi.InverseOff'{:R:}`n"    
-    Write-Wansi "{:InverseOn:}{:UnderlineOn:}{:BoldOn:}Everything On {:R:}: Reset `$(`$Wansi.R)`n"   
+
+    $output = ""
+    $output += (ConvertTo-AnsiString "`n{:UnderlineOn:}Styles{:R:}`n").Value
+    $output += (ConvertTo-AnsiString "{:BoldOn:}Bold '`$Wansi.BoldOn'{:BoldOff:} : Bold Off '`$Wansi.BoldOff'{:R:}`n").Value
+    $output += (ConvertTo-AnsiString "{:UnderlineOn:}Underline '`$Wansi.UnderlineOn'{:UnderlineOff:} : Underline Off '`$Wansi.UnderlineOff'{:R:}`n").Value
+    $output += (ConvertTo-AnsiString "{:InverseOn:}Inverse '`$Wansi.InverseOn'{:InverseOff:} : Inverse Off '`$Wansi.InverseOff'{:R:}`n").Value
+    $output += (ConvertTo-AnsiString "{:InverseOn:}{:UnderlineOn:}{:BoldOn:}Everything On {:R:}: Reset `$(`$Wansi.R)`n" ).Value
     
-    Write-Wansi "`n{:UnderlineOn:}Foreground(`$Wansi.F`#),  Background(`$Wansi.B`#){:R:}`n"
+    $output += (ConvertTo-AnsiString "`n{:UnderlineOn:}Foreground(`$Wansi.F`#),  Background(`$Wansi.B`#){:R:}`n").Value
 
     foreach ($color in 0..255) {
         $fg = ConvertTo-AnsiString " $color" -PadRight 5
         $bg = ConvertTo-AnsiString "{`:B$color`:}" -PadRight 5
-        Write-Wansi ("{0, -5}{1}{2}" -f $fg.Value, "{:F0:}", $bg.Value)
-        if ( (($color + 1) % 6) -eq 4 ) { Write-Host "`r" }
+        $temp = "{0, -5}{1}{2}" -f $fg.Value, "{:F0:}", $bg.Value
+        $output += (ConvertTo-AnsiString "$temp{:R:}").Value
+        if ( (($color + 1) % 6) -eq 4 ) { $output += "`n" }
     }
-    Write-Host `n
+
+    $output
 }
 
 function ConvertTo-AnsiString {
@@ -172,7 +180,7 @@ function Write-Wansi() {
         [string]$Value
     )
 
-    Write-Host $(ConvertTo-AnsiString $Value).Value -NoNewline
+    Write-Output $(ConvertTo-AnsiString $Value).Value
 }
 
 Update-AnsiCodes

@@ -3,6 +3,10 @@ Change Log
 
 ## **Latest**
 
+### 0.0.13 - 2021-6-20
+#### Changes
+- converted to Write-Output
+
 ### 0.0.12 - 2020-11-21
 #### Changes
 - Added ability to disable Wansi Tokens
