@@ -161,13 +161,36 @@ Describe 'Expand-Tokens' {
 
 }
 
+Describe 'Expand-Tokens prefix space' {
+        
+    It 'Should add space' {
+        Add-Member -InputObject $Wansi -MemberType NoteProperty -Name "TestValue" -Value "MyValue" -Force
+        Expand-Tokens "{{TestValue|< }}" | Should -Be " MyValue"
+    }
+}
+
 Describe 'Expand-Tokens append space' {
         
     It 'Should add space' {
         Add-Member -InputObject $Wansi -MemberType NoteProperty -Name "TestValue" -Value "MyValue" -Force
-        Expand-Tokens "{{TestValue+}}" | Should -Be "MyValue "
+        Expand-Tokens "{{TestValue|> }}" | Should -Be "MyValue "
     }
+}
 
+Describe 'Expand-Tokens append and prefix space' {
+        
+    It 'Should add space' {
+        Add-Member -InputObject $Wansi -MemberType NoteProperty -Name "TestValue" -Value "MyValue" -Force
+        Expand-Tokens "{{TestValue|> < }}" | Should -Be " MyValue "
+    }
+}
+
+Describe 'Expand-Tokens append and prefix >' {
+        
+    It 'Should add space' {
+        Add-Member -InputObject $Wansi -MemberType NoteProperty -Name "TestValue" -Value "MyValue" -Force
+        Expand-Tokens "{{TestValue|> <\>}}" | Should -Be ">MyValue "
+    }
 }
 
 Describe 'Expand-Tokens with ansi code' {
@@ -185,10 +208,70 @@ Describe 'Expand-Tokens with prepend and append' {
         
     It 'Should be proper length' {
         Add-Member -InputObject $Wansi -MemberType NoteProperty -Name "TestValue" -Value "X" -Force
-        $as = Expand-Tokens "{{TestValue++}}"
+        $as = Expand-Tokens "{{TestValue|<>}}"
 
         $as | Should -Be " X "
     
     }
 
+    It 'Should be proper length' {
+        Add-Member -InputObject $Wansi -MemberType NoteProperty -Name "TestValue" -Value "X" -Force
+        $as = Expand-Tokens "{{TestValue|><}}"
+
+        $as | Should -Be " X "
+    
+    }
+
+    It 'Should be proper length' {
+        Add-Member -InputObject $Wansi -MemberType NoteProperty -Name "TestValue" -Value "X" -Force
+        $as = Expand-Tokens "{{TestValue|<}}"
+
+        $as | Should -Be " X"
+    
+    }
+
+    It 'Should be proper length' {
+        Add-Member -InputObject $Wansi -MemberType NoteProperty -Name "TestValue" -Value "X" -Force
+        $as = Expand-Tokens "{{TestValue|>}}"
+
+        $as | Should -Be "X "
+    
+    }
+}
+
+Describe 'Format-Options' {
+
+    It 'Should handle error' {
+        
+        $f = Get-FormatOptions "test|"   
+
+    }
+        
+    It 'Should succed with prefix and append' {
+        
+        $f = Get-FormatOptions "test|>ab<cd"
+
+        $f.Prefix | Should -Be $true
+        $f.PrefixValue | Should -Be "cd"
+        $f.Append | Should -Be $true
+        $f.AppendValue | Should -Be "ab"
+    
+    }
+
+}
+
+Describe 'Format-Options escape' {
+
+    It 'Should succeed with escape' {
+        
+        $f = Get-FormatOptions "test|<c\<d"
+
+        $f.Value | Should -Be "test"
+        $f.Prefix | Should -Be $true
+        $f.PrefixValue | Should -Be "c<d"
+        $f.Append | Should -Be $false
+        $f.AppendValue | Should -Be ""
+        
+    
+    }
 }

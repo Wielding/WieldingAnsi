@@ -20,8 +20,89 @@ class AnsiString {
     [string]$Value
 }
 
+class FormatOptions {
+    [string]$Value
+    [bool]$Prefix
+    [string]$PrefixValue
+    [bool]$Append 
+    [string]$Appendvalue
+}
+
 $Wansi = New-Object -TypeName WansiConfig
 
+function Get-FormatOptions {
+    param (
+        $Token
+    )
+
+    $f = New-Object -TypeName FormatOptions 
+    $f.AppendValue = ""
+    $f.PrefixValue = ""
+
+    if (-not ($Token -match "\|")) {
+        $f.Value = $Token
+        return $f
+    }
+
+    $spec = $Token.SubString($Token.IndexOf("|") + 1)
+
+    $f.Value = $Token.SubString(0, $Token.IndexOf("|"))
+
+    if ($spec.Length -lt 1) {
+        return $f
+    }
+
+    $escapeNext = $false
+    $capture = ""
+    
+    $spec.ToCharArray() | ForEach-Object {
+
+        $c = $_
+
+        switch -Wildcard ($c) {
+            "\" {
+                $escapeNext = $true;Break
+            }
+            ">" {
+                if (-not $escapeNext){
+                    $capture = "A"
+                    $f.Append = $true
+                     Break
+                }                
+            }
+            "<" {
+                if (-not $escapeNext){
+                    $capture = "P"
+                    $f.Prefix = $true
+                     Break
+                }
+
+            }
+            "*" {
+                $escapeNext = $false
+                switch ($capture) {
+                    "P" {
+                        $f.PrefixValue += $c
+                        Break
+                    }
+
+                    "A" {
+                        $f.AppendValue += $c
+                        Break                        
+                    }
+                }
+                
+
+            }
+            # default {
+            # }
+        }
+
+    }
+
+    $f
+
+}
 function Get-WieldingAnsiInfo {
     $moduleName = (Get-ChildItem "$PSScriptRoot/*.psd1").Name
 
@@ -97,38 +178,32 @@ function Expand-Tokens {
 
     $result = $Value
 
-    $captures = [regex]::Matches($Value, "\{\{(\w+\+?\+?)\}\}").Groups.captures
+    # "\{\{(\w+[<>](.)?[<>]?(.))\}\}"
+
+    $captures = [regex]::Matches($Value, "\{\{([^\}]*)\}\}").Groups.captures
     foreach ($capture in $captures) {
         if ($null -ne $capture.Groups) {
-            $appendSpace = $false
-            $prependSpace = $false
             $token = $capture.Groups[0].Value
+
+
             $property =$capture.Groups[1].Value
-            if ($property -match '\+$') {
-                $appendSpace = $true
+
+            $fmt = Get-FormatOptions $property
+
+            $code = $Wansi.PSObject.Properties.Item($fmt.Value).Value
+
+            if ($fmt.Prefix) {
+                if ($fmt.PrefixValue.Length -lt 1) {
+                    $fmt.PrefixValue = " "
+                }
+                $code = $fmt.PrefixValue + $code
             }
 
-            if ($property -match '\+\+$') {
-                $prependSpace = $true
-            }
-
-            if ($appendSpace) {
-                $property = $property.SubString(0, $property.Length - 1)
-            }
-
-            if ($prependSpace) {
-                $property = $property.SubString(0, $property.Length - 1)
-            }
-
-            $code = $Wansi.PSObject.Properties.Item($property).Value
-
-            if ($prependSpace -and $code.Length -gt 0) {
-                $code = " " + $code
-            }
-
-
-            if ($appendSpace -and $code.Length -gt 0) {
-                $code = $code + " "
+            if ($fmt.Append) {
+                if ($fmt.AppendValue.Length -lt 1) {
+                    $fmt.AppendValue = " "
+                }
+                $code = $code + $fmt.AppendValue
             }
 
             $result = $result.Replace($token, $code)
@@ -247,6 +322,7 @@ Update-AnsiCodes
 
 Export-ModuleMember -Function Out-Default, 'Get-WieldingAnsiInfo'
 Export-ModuleMember -Function Out-Default, 'Set-WansiToken'
+Export-ModuleMember -Function Out-Default, 'Get-FormatOptions'
 Export-ModuleMember -Function Out-Default, 'Show-AnsiCodes'
 Export-ModuleMember -Function Out-Default, 'Update-AnsiCodes'
 Export-ModuleMember -Function Out-Default, 'Expand-Tokens'
