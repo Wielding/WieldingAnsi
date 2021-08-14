@@ -180,3 +180,15 @@ Describe 'Expand-Tokens with ansi code' {
     }
 
 }
+
+Describe 'Expand-Tokens with prepend and append' {
+        
+    It 'Should be proper length' {
+        Add-Member -InputObject $Wansi -MemberType NoteProperty -Name "TestValue" -Value "X" -Force
+        $as = Expand-Tokens "{{TestValue++}}"
+
+        $as | Should -Be " X "
+    
+    }
+
+}

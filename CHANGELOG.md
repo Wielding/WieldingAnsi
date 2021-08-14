@@ -3,6 +3,10 @@ Change Log
 
 ## **Latest**
 
+### 0.0.15 - 2021-8-14
+#### Changes
+- Added Set-WansiToken
+
 ### 0.0.14 - 2021-8-14
 #### Changes
 - Added Expand-Tokens

@@ -80,6 +80,16 @@ function Show-AnsiCodes() {
     $output
 }
 
+function Set-WansiToken {
+    param (
+        [string]$Name,
+        [string]$Value
+    )
+
+    Add-Member -InputObject $Wansi -MemberType NoteProperty -Name $Name -Value $Value -Force
+
+}
+
 function Expand-Tokens {
     param (
         [string]$Value
@@ -87,21 +97,35 @@ function Expand-Tokens {
 
     $result = $Value
 
-    $captures = [regex]::Matches($Value, "\{\{(\w+\+?)\}\}").Groups.captures
+    $captures = [regex]::Matches($Value, "\{\{(\w+\+?\+?)\}\}").Groups.captures
     foreach ($capture in $captures) {
         if ($null -ne $capture.Groups) {
             $appendSpace = $false
+            $prependSpace = $false
             $token = $capture.Groups[0].Value
             $property =$capture.Groups[1].Value
             if ($property -match '\+$') {
                 $appendSpace = $true
             }
 
+            if ($property -match '\+\+$') {
+                $prependSpace = $true
+            }
+
             if ($appendSpace) {
                 $property = $property.SubString(0, $property.Length - 1)
             }
 
+            if ($prependSpace) {
+                $property = $property.SubString(0, $property.Length - 1)
+            }
+
             $code = $Wansi.PSObject.Properties.Item($property).Value
+
+            if ($prependSpace -and $code.Length -gt 0) {
+                $code = " " + $code
+            }
+
 
             if ($appendSpace -and $code.Length -gt 0) {
                 $code = $code + " "
@@ -222,6 +246,7 @@ function Write-Wansi() {
 Update-AnsiCodes
 
 Export-ModuleMember -Function Out-Default, 'Get-WieldingAnsiInfo'
+Export-ModuleMember -Function Out-Default, 'Set-WansiToken'
 Export-ModuleMember -Function Out-Default, 'Show-AnsiCodes'
 Export-ModuleMember -Function Out-Default, 'Update-AnsiCodes'
 Export-ModuleMember -Function Out-Default, 'Expand-Tokens'
