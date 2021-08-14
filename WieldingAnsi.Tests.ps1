@@ -151,3 +151,32 @@ Describe 'ConvertTo-AnsiString with Wansi PadLeft Exact' {
         (ConvertTo-AnsiString $wansiValue -PadLeft 4).Value | Should -Be "`e[1mtest`e[0m"
     }        
 }
+
+Describe 'Expand-Tokens' {
+        
+    It 'Should expand' {
+        Add-Member -InputObject $Wansi -MemberType NoteProperty -Name "TestValue" -Value "MyValue" -Force
+        Expand-Tokens "{{TestValue}}-{{TestValue}}" | Should -Be "MyValue-MyValue"
+    }
+
+}
+
+Describe 'Expand-Tokens append space' {
+        
+    It 'Should add space' {
+        Add-Member -InputObject $Wansi -MemberType NoteProperty -Name "TestValue" -Value "MyValue" -Force
+        Expand-Tokens "{{TestValue+}}" | Should -Be "MyValue "
+    }
+
+}
+
+Describe 'Expand-Tokens with ansi code' {
+        
+    It 'Should be proper length' {
+        Add-Member -InputObject $Wansi -MemberType NoteProperty -Name "TestValue" -Value "X{:F15:}" -Force
+        $as = ConvertTo-AnsiString "{{TestValue}}"
+
+        $as.NakedLength | Should -Be 1
+    }
+
+}

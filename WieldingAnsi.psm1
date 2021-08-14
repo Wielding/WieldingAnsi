@@ -80,6 +80,41 @@ function Show-AnsiCodes() {
     $output
 }
 
+function Expand-Tokens {
+    param (
+        [string]$Value
+    )
+
+    $result = $Value
+
+    $captures = [regex]::Matches($Value, "\{\{(\w+\+?)\}\}").Groups.captures
+    foreach ($capture in $captures) {
+        if ($null -ne $capture.Groups) {
+            $appendSpace = $false
+            $token = $capture.Groups[0].Value
+            $property =$capture.Groups[1].Value
+            if ($property -match '\+$') {
+                $appendSpace = $true
+            }
+
+            if ($appendSpace) {
+                $property = $property.SubString(0, $property.Length - 1)
+            }
+
+            $code = $Wansi.PSObject.Properties.Item($property).Value
+
+            if ($appendSpace -and $code.Length -gt 0) {
+                $code = $code + " "
+            }
+
+            $result = $result.Replace($token, $code)
+        }
+    }
+
+    $result
+
+}
+
 function ConvertTo-AnsiString {
     <#
  .SYNOPSIS
@@ -104,9 +139,10 @@ function ConvertTo-AnsiString {
         [int]$PadLeft
     )
 
-    $result = $Value
-    $naked = $Value
-    $captures = [regex]::Matches($Value, "\{:(\w+):\}").Groups.captures
+    $result = Expand-Tokens $Value    
+    $naked = $result
+
+    $captures = [regex]::Matches($result, "\{:(\w+):\}").Groups.captures
     $tokensLength = 0
 
     foreach ($capture in $captures) {
@@ -188,6 +224,7 @@ Update-AnsiCodes
 Export-ModuleMember -Function Out-Default, 'Get-WieldingAnsiInfo'
 Export-ModuleMember -Function Out-Default, 'Show-AnsiCodes'
 Export-ModuleMember -Function Out-Default, 'Update-AnsiCodes'
+Export-ModuleMember -Function Out-Default, 'Expand-Tokens'
 Export-ModuleMember -Function Out-Default, 'ConvertTo-AnsiString'
 Export-ModuleMember -Function Out-Default, 'Write-Wansi'
 Export-ModuleMember -Variable 'Wansi'

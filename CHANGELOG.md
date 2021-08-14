@@ -3,6 +3,10 @@ Change Log
 
 ## **Latest**
 
+### 0.0.14 - 2021-8-14
+#### Changes
+- Added Expand-Tokens
+
 ### 0.0.13 - 2021-6-20
 #### Changes
 - converted to Write-Output
