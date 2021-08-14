@@ -68,6 +68,20 @@ function Get-FormatOptions {
             }
             ">" {
                 if (-not $escapeNext) {
+                    if ($f.Attribute) {
+                        if ($f.AttributeFor -eq "A") {
+                            $f.AppendValue ="{:$($f.AttributeValue):}" + $f.AppendValue
+                            $f.Attribute = $false
+                            $f.AttributeValue = ""
+                        }
+
+                        if ($f.AttributeFor -eq "P") {
+                            $f.PrefixValue =  $f.PrefixValue + "{:$($f.AttributeValue):}" 
+                            $f.Attribute = $false
+                            $f.AttributeValue = ""
+                        }
+                    }
+
                     $capture = "A"
                     $f.Append = $true
                     Break
@@ -75,6 +89,22 @@ function Get-FormatOptions {
             }
             "<" {
                 if (-not $escapeNext) {
+
+                    if ($f.Attribute) {
+                        if ($f.AttributeFor -eq "P") {
+                            $f.PrefixValue =  $f.PrefixValue + "{:$($f.AttributeValue):}" 
+                            $f.Attribute = $false
+                            $f.AttributeValue = ""
+                        }
+
+                        if ($f.AttributeFor -eq "A") {
+                            $f.AppendValue =  $f.AppendValue + "{:$($f.AttributeValue):}" 
+                            $f.Attribute = $false
+                            $f.AttributeValue = ""
+                        }
+                    }
+                    
+
                     $capture = "P"
                     $f.Prefix = $true
                     Break
@@ -82,6 +112,7 @@ function Get-FormatOptions {
             }
             "@" {
                 if (-not $escapeNext) {
+
                     $f.AttributeFor = $capture
                     $capture = "@"
                     $f.Attribute = $true
@@ -92,25 +123,11 @@ function Get-FormatOptions {
                 $escapeNext = $false
                 switch ($capture) {
                     "P" {
-                        if ($f.Attribute) {
-                            if ($f.AttributeFor -eq "P") {
-                                $f.PrefixValue = "{:$($f.AttributeValue):}" + $f.PrefixValue
-                                $f.Attribute = $false
-                                $f.AttributeValue = ""
-                            }
-                        }
                         $f.PrefixValue += $c
                         Break
                     }
 
                     "A" {
-                        if ($f.Attribute) {
-                            if ($f.AttributeFor -eq "A") {
-                                $f.AppendValue ="{:$($f.AttributeValue):}" + $f.AppendValue
-                                $f.Attribute = $false
-                                $f.AttributeValue = ""
-                            }
-                        }
                         $f.AppendValue += $c
                         Break                        
                     }

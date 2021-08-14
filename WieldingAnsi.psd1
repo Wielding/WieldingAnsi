@@ -12,7 +12,7 @@
 RootModule = 'WieldingAnsi.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.0.19'
+ModuleVersion = '0.0.20'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -109,7 +109,7 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = 'refactored attribute format option'
+        ReleaseNotes = 'fixed attribute handling'
 
         # Prerelease string of this module
         # Prerelease = ''

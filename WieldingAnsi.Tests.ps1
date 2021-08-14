@@ -325,3 +325,15 @@ Describe 'Format-Options empty' {
     
     }            
 }
+
+"{{User|<@F190<@B10}}"
+
+Describe 'Format-Options multiple attributes' {     
+    It 'Should be proper length' {
+        Add-Member -InputObject $Wansi -MemberType NoteProperty -Name "TestValue" -Value "A" -Force
+        $as = Expand-Tokens "{{TestValue|<@F1<[<@F2>@F3>] }}"
+
+        $as | Should -Be "{:F1:}[{:F2:}A{:F3:}] "
+    
+    }            
+}

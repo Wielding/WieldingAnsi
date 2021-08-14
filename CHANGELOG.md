@@ -3,6 +3,10 @@ Change Log
 
 ## **Latest**
 
+### 0.0.20 - 2021-8-14
+#### Changes
+- fixed attribute handling
+
 ### 0.0.19 - 2021-8-14
 #### Changes
 - refactored attribute format option
