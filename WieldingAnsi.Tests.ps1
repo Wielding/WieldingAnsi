@@ -275,3 +275,15 @@ Describe 'Format-Options escape' {
     
     }
 }
+
+Describe 'Format-Options with code' {
+
+        
+        It 'Should be proper length' {
+            Add-Member -InputObject $Wansi -MemberType NoteProperty -Name "TestValue" -Value "X" -Force
+            $as = Expand-Tokens "{{TestValue|<>@F5}}"
+    
+            $as | Should -Be " X{:F5:}"
+        
+        }            
+}

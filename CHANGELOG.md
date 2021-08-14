@@ -3,6 +3,10 @@ Change Log
 
 ## **Latest**
 
+### 0.0.17 - 2021-8-14
+#### Changes
+- added @ format option
+
 ### 0.0.16 - 2021-8-14
 #### Changes
 - refactored format options

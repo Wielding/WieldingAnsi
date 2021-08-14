@@ -26,6 +26,8 @@ class FormatOptions {
     [string]$PrefixValue
     [bool]$Append 
     [string]$Appendvalue
+    [bool]$Attribute
+    [string]$AttributeValue
 }
 
 $Wansi = New-Object -TypeName WansiConfig
@@ -76,7 +78,6 @@ function Get-FormatOptions {
                     $f.Prefix = $true
                      Break
                 }
-
             }
             "*" {
                 $escapeNext = $false
@@ -196,15 +197,28 @@ function Expand-Tokens {
                 if ($fmt.PrefixValue.Length -lt 1) {
                     $fmt.PrefixValue = " "
                 }
+
+                if ($fmt.PrefixValue[0] -eq "@") {
+                    $fmt.PrefixValue = "{:$($fmt.PrefixValue.SubString(1)):}"
+                }
+
                 $code = $fmt.PrefixValue + $code
             }
 
             if ($fmt.Append) {
+
                 if ($fmt.AppendValue.Length -lt 1) {
                     $fmt.AppendValue = " "
                 }
+
+                if ($fmt.AppendValue[0] -eq "@") {
+                    $fmt.AppendValue = "{:$($fmt.AppendValue.SubString(1)):}"
+                }
+
                 $code = $code + $fmt.AppendValue
             }
+
+
 
             $result = $result.Replace($token, $code)
         }
