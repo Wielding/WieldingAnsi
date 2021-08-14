@@ -3,6 +3,10 @@ Change Log
 
 ## **Latest**
 
+### 0.0.18 - 2021-8-14
+#### Changes
+- fixed length check
+
 ### 0.0.17 - 2021-8-14
 #### Changes
 - added @ format option

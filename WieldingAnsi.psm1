@@ -63,20 +63,20 @@ function Get-FormatOptions {
 
         switch -Wildcard ($c) {
             "\" {
-                $escapeNext = $true;Break
+                $escapeNext = $true; Break
             }
             ">" {
-                if (-not $escapeNext){
+                if (-not $escapeNext) {
                     $capture = "A"
                     $f.Append = $true
-                     Break
+                    Break
                 }                
             }
             "<" {
-                if (-not $escapeNext){
+                if (-not $escapeNext) {
                     $capture = "P"
                     $f.Prefix = $true
-                     Break
+                    Break
                 }
             }
             "*" {
@@ -187,38 +187,39 @@ function Expand-Tokens {
             $token = $capture.Groups[0].Value
 
 
-            $property =$capture.Groups[1].Value
+            $property = $capture.Groups[1].Value
 
             $fmt = Get-FormatOptions $property
 
             $code = $Wansi.PSObject.Properties.Item($fmt.Value).Value
 
-            if ($fmt.Prefix) {
-                if ($fmt.PrefixValue.Length -lt 1) {
-                    $fmt.PrefixValue = " "
+            if ($code.Length -gt 0) {
+
+                if ($fmt.Prefix) {
+                    if ($fmt.PrefixValue.Length -lt 1) {
+                        $fmt.PrefixValue = " "
+                    }
+
+                    if ($fmt.PrefixValue[0] -eq "@") {
+                        $fmt.PrefixValue = "{:$($fmt.PrefixValue.SubString(1)):}"
+                    }
+
+                    $code = $fmt.PrefixValue + $code
                 }
 
-                if ($fmt.PrefixValue[0] -eq "@") {
-                    $fmt.PrefixValue = "{:$($fmt.PrefixValue.SubString(1)):}"
-                }
+                if ($fmt.Append) {
 
-                $code = $fmt.PrefixValue + $code
+                    if ($fmt.AppendValue.Length -lt 1) {
+                        $fmt.AppendValue = " "
+                    }
+
+                    if ($fmt.AppendValue[0] -eq "@") {
+                        $fmt.AppendValue = "{:$($fmt.AppendValue.SubString(1)):}"
+                    }
+
+                    $code = $code + $fmt.AppendValue
+                }
             }
-
-            if ($fmt.Append) {
-
-                if ($fmt.AppendValue.Length -lt 1) {
-                    $fmt.AppendValue = " "
-                }
-
-                if ($fmt.AppendValue[0] -eq "@") {
-                    $fmt.AppendValue = "{:$($fmt.AppendValue.SubString(1)):}"
-                }
-
-                $code = $code + $fmt.AppendValue
-            }
-
-
 
             $result = $result.Replace($token, $code)
         }
@@ -261,7 +262,7 @@ function ConvertTo-AnsiString {
     foreach ($capture in $captures) {
         if ($null -ne $capture.Groups) {
             $token = $capture.Groups[0].Value
-            $property =$capture.Groups[1].Value
+            $property = $capture.Groups[1].Value
             $naked = $naked.Replace($capture.Groups[0].Value, "")
 
 
@@ -270,7 +271,8 @@ function ConvertTo-AnsiString {
                 $tokensLength += $code.Length
                 if ($Wansi.Enabled) {
                     $result = $result.Replace($token, $code)
-                }  else {
+                }
+                else {
                     $result = $result.Replace($token, "")
                 }
             }            
@@ -301,7 +303,8 @@ function ConvertTo-AnsiString {
     $ansiString.Length = $result.Length
     if ($Wansi.Enabled) {
         $ansiString.InvisibleLength = $tokensLength
-    } else {
+    }
+    else {
         $ansiString.InvisibleLength = 0
         $ansiString.NakedLength = $result.Length
     }

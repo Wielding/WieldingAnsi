@@ -276,9 +276,7 @@ Describe 'Format-Options escape' {
     }
 }
 
-Describe 'Format-Options with code' {
-
-        
+Describe 'Format-Options with code' {     
         It 'Should be proper length' {
             Add-Member -InputObject $Wansi -MemberType NoteProperty -Name "TestValue" -Value "X" -Force
             $as = Expand-Tokens "{{TestValue|<>@F5}}"
@@ -286,4 +284,14 @@ Describe 'Format-Options with code' {
             $as | Should -Be " X{:F5:}"
         
         }            
+}
+
+Describe 'Format-Options empty' {     
+    It 'Should be proper length' {
+        Add-Member -InputObject $Wansi -MemberType NoteProperty -Name "TestValue" -Value "" -Force
+        $as = Expand-Tokens "{{TestValue|>}}"
+
+        $as | Should -Be ""
+    
+    }            
 }
