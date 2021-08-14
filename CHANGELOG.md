@@ -3,6 +3,10 @@ Change Log
 
 ## **Latest**
 
+### 0.0.21 - 2021-8-14
+#### Changes
+- added Show-WansiVisibleTokens and test cleaning
+
 ### 0.0.20 - 2021-8-14
 #### Changes
 - fixed attribute handling

@@ -33,6 +33,33 @@ class FormatOptions {
 
 $Wansi = New-Object -TypeName WansiConfig
 
+function Show-WansiVisibleTokens {
+    $Wansi.PSOBject.Properties | ForEach-Object {
+         if (-not($_.Value -match "`e")) {
+              Write-Host "$($_.Name): `"$($_.Value)`""
+            }
+        }
+}
+
+function Edit-AttributeValues {
+    param (
+        [FormatOptions]$f
+    )
+
+    if ($f.AttributeFor -eq "A") {
+        $f.AppendValue ="{:$($f.AttributeValue):}" + $f.AppendValue
+        $f.Attribute = $false
+        $f.AttributeValue = ""
+    }
+
+    if ($f.AttributeFor -eq "P") {
+        $f.PrefixValue =  $f.PrefixValue + "{:$($f.AttributeValue):}" 
+        $f.Attribute = $false
+        $f.AttributeValue = ""
+    }
+
+    $f
+}
 function Get-FormatOptions {
     param (
         $Token
@@ -69,17 +96,7 @@ function Get-FormatOptions {
             ">" {
                 if (-not $escapeNext) {
                     if ($f.Attribute) {
-                        if ($f.AttributeFor -eq "A") {
-                            $f.AppendValue ="{:$($f.AttributeValue):}" + $f.AppendValue
-                            $f.Attribute = $false
-                            $f.AttributeValue = ""
-                        }
-
-                        if ($f.AttributeFor -eq "P") {
-                            $f.PrefixValue =  $f.PrefixValue + "{:$($f.AttributeValue):}" 
-                            $f.Attribute = $false
-                            $f.AttributeValue = ""
-                        }
+                        $f = Edit-AttributeValues $f
                     }
 
                     $capture = "A"
@@ -91,20 +108,9 @@ function Get-FormatOptions {
                 if (-not $escapeNext) {
 
                     if ($f.Attribute) {
-                        if ($f.AttributeFor -eq "P") {
-                            $f.PrefixValue =  $f.PrefixValue + "{:$($f.AttributeValue):}" 
-                            $f.Attribute = $false
-                            $f.AttributeValue = ""
-                        }
-
-                        if ($f.AttributeFor -eq "A") {
-                            $f.AppendValue =  $f.AppendValue + "{:$($f.AttributeValue):}" 
-                            $f.Attribute = $false
-                            $f.AttributeValue = ""
-                        }
+                        $f = Edit-AttributeValues $f
                     }
-                    
-
+                  
                     $capture = "P"
                     $f.Prefix = $true
                     Break
@@ -139,26 +145,12 @@ function Get-FormatOptions {
                 }               
 
             }
-            # default {
-            # }
         }
     }
 
     if ($f.Attribute) {
-        switch ($f.AttributeFor) {
-            "P" {
-                $f.PrefixValue += "{:$($f.AttributeValue):}"
-            }
-
-            "A" {
-                $f.AppendValue += "{:$($f.AttributeValue):}"
-            }
-        }
-
-        $f.Attribute = $false
-        $f.AttributeValue = ""
+        $f = Edit-AttributeValues $f
     }
-
 
     $f
 
@@ -238,18 +230,12 @@ function Expand-Tokens {
 
     $result = $Value
 
-    # "\{\{(\w+[<>](.)?[<>]?(.))\}\}"
-
     $captures = [regex]::Matches($Value, "\{\{([^\}]*)\}\}").Groups.captures
     foreach ($capture in $captures) {
         if ($null -ne $capture.Groups) {
             $token = $capture.Groups[0].Value
-
-
             $property = $capture.Groups[1].Value
-
             $fmt = Get-FormatOptions $property
-
             $code = $Wansi.PSObject.Properties.Item($fmt.Value).Value
 
             if ($code.Length -gt 0) {
@@ -259,10 +245,6 @@ function Expand-Tokens {
                         $fmt.PrefixValue = " "
                     }
 
-                    # if ($fmt.PrefixValue[0] -eq "@") {
-                    #     $fmt.PrefixValue = "{:$($fmt.PrefixValue.SubString(1)):}"
-                    # }
-
                     $code = $fmt.PrefixValue + $code
                 }
 
@@ -271,10 +253,6 @@ function Expand-Tokens {
                     if ($fmt.AppendValue.Length -lt 1) {
                         $fmt.AppendValue = " "
                     }
-
-                    # if ($fmt.AppendValue[0] -eq "@") {
-                    #     $fmt.AppendValue = "{:$($fmt.AppendValue.SubString(1)):}"
-                    # }
 
                     $code = $code + $fmt.AppendValue
                 }
@@ -400,6 +378,7 @@ Export-ModuleMember -Function Out-Default, 'Get-WieldingAnsiInfo'
 Export-ModuleMember -Function Out-Default, 'Set-WansiToken'
 Export-ModuleMember -Function Out-Default, 'Get-FormatOptions'
 Export-ModuleMember -Function Out-Default, 'Show-AnsiCodes'
+Export-ModuleMember -Function Out-Default, 'Show-WansiVisibleTokens'
 Export-ModuleMember -Function Out-Default, 'Update-AnsiCodes'
 Export-ModuleMember -Function Out-Default, 'Expand-Tokens'
 Export-ModuleMember -Function Out-Default, 'ConvertTo-AnsiString'
