@@ -28,6 +28,7 @@ class FormatOptions {
     [string]$Appendvalue
     [bool]$Attribute
     [string]$AttributeValue
+    [string]$AttributeFor
 }
 
 $Wansi = New-Object -TypeName WansiConfig
@@ -79,27 +80,68 @@ function Get-FormatOptions {
                     Break
                 }
             }
+            "@" {
+                if (-not $escapeNext) {
+                    $f.AttributeFor = $capture
+                    $capture = "@"
+                    $f.Attribute = $true
+                    Break
+                }                
+            }
             "*" {
                 $escapeNext = $false
                 switch ($capture) {
                     "P" {
+                        if ($f.Attribute) {
+                            if ($f.AttributeFor -eq "P") {
+                                $f.PrefixValue = "{:$($f.AttributeValue):}" + $f.PrefixValue
+                                $f.Attribute = $false
+                                $f.AttributeValue = ""
+                            }
+                        }
                         $f.PrefixValue += $c
                         Break
                     }
 
                     "A" {
+                        if ($f.Attribute) {
+                            if ($f.AttributeFor -eq "A") {
+                                $f.AppendValue ="{:$($f.AttributeValue):}" + $f.AppendValue
+                                $f.Attribute = $false
+                                $f.AttributeValue = ""
+                            }
+                        }
                         $f.AppendValue += $c
                         Break                        
                     }
-                }
-                
+
+                    "@" {
+                        $f.AttributeValue += $c
+                        Break                        
+                    }
+                }               
 
             }
             # default {
             # }
         }
-
     }
+
+    if ($f.Attribute) {
+        switch ($f.AttributeFor) {
+            "P" {
+                $f.PrefixValue += "{:$($f.AttributeValue):}"
+            }
+
+            "A" {
+                $f.AppendValue += "{:$($f.AttributeValue):}"
+            }
+        }
+
+        $f.Attribute = $false
+        $f.AttributeValue = ""
+    }
+
 
     $f
 
@@ -200,9 +242,9 @@ function Expand-Tokens {
                         $fmt.PrefixValue = " "
                     }
 
-                    if ($fmt.PrefixValue[0] -eq "@") {
-                        $fmt.PrefixValue = "{:$($fmt.PrefixValue.SubString(1)):}"
-                    }
+                    # if ($fmt.PrefixValue[0] -eq "@") {
+                    #     $fmt.PrefixValue = "{:$($fmt.PrefixValue.SubString(1)):}"
+                    # }
 
                     $code = $fmt.PrefixValue + $code
                 }
@@ -213,9 +255,9 @@ function Expand-Tokens {
                         $fmt.AppendValue = " "
                     }
 
-                    if ($fmt.AppendValue[0] -eq "@") {
-                        $fmt.AppendValue = "{:$($fmt.AppendValue.SubString(1)):}"
-                    }
+                    # if ($fmt.AppendValue[0] -eq "@") {
+                    #     $fmt.AppendValue = "{:$($fmt.AppendValue.SubString(1)):}"
+                    # }
 
                     $code = $code + $fmt.AppendValue
                 }

@@ -3,6 +3,10 @@ Change Log
 
 ## **Latest**
 
+### 0.0.19 - 2021-8-14
+#### Changes
+- refactored attribute format option
+
 ### 0.0.18 - 2021-8-14
 #### Changes
 - fixed length check
